@@ -168,37 +168,37 @@ exports.getAllServices = async (req, res) => {
   }
 };
 
-// ================= DELETE ANY SERVICE =================
+// // ================= DELETE ANY SERVICE =================
 
-exports.deleteService = async (req, res) => {
-  try {
-    // Find Service
-    const service = await Service.findById(req.params.id);
+// exports.deleteService = async (req, res) => {
+//   try {
+//     // Find Service
+//     const service = await Service.findById(req.params.id);
 
-    if (!service) {
-      return res.status(404).json({
-        success: false,
-        message: "Service not found",
-      });
-    }
+//     if (!service) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Service not found",
+//       });
+//     }
 
-    // Delete Service
-    await Service.findByIdAndDelete(req.params.id);
+//     // Delete Service
+//     await Service.findByIdAndDelete(req.params.id);
 
-    res.status(200).json({
-      success: true,
-      message: "Service deleted successfully",
-    });
+//     res.status(200).json({
+//       success: true,
+//       message: "Service deleted successfully",
+//     });
 
-  } catch (error) {
-    console.log(error);
+//   } catch (error) {
+//     console.log(error);
 
-    res.status(500).json({
-      success: false,
-      message: "Server Error",
-    });
-  }
-};
+//     res.status(500).json({
+//       success: false,
+//       message: "Server Error",
+//     });
+//   }
+// };
 // ================= GET ALL BOOKINGS =================
 
 exports.getAllBookings = async (req, res) => {
@@ -348,6 +348,69 @@ exports.getDashboardStats = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server Error",
+    });
+  }
+};
+// ================= GET PENDING EXPERT REQUESTS =================
+
+exports.getPendingExperts = async (req, res) => {
+  try {
+    const experts = await User.find({
+      expertRequest: true,
+      isApproved: false,
+    }).select('-password');
+
+    res.status(200).json({
+      success: true,
+      count: experts.length,
+      experts,
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: 'Server Error',
+    });
+  }
+};
+
+// ================= APPROVE EXPERT =================
+
+exports.approveExpert = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    user.role = 'expert';
+    user.isApproved = true;
+    user.expertRequest = false;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Expert approved successfully',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isApproved: user.isApproved,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: 'Server Error',
     });
   }
 };

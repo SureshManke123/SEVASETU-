@@ -35,6 +35,19 @@ router.post("/login", authController.login);
 router.get("/me", protect, authController.getMe);
 
 router.put("/update-profile", protect, authController.updateProfile);
+router.put(
+  '/apply-expert',
+  protect,
+  authController.applyForExpert
+);
+
+// ================= APPLY FOR EXPERT =================
+
+router.put(
+  '/apply-expert',
+  protect,
+  authController.applyForExpert
+);
 
 // ================= ROLE TEST ROUTES =================
 

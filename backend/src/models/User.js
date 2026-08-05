@@ -38,6 +38,17 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
 
+    expertRequest: {
+    type: Boolean,
+    default: false,
+  },
+
+  isApproved: {
+    type: Boolean,
+    default: false,
+  },
+  
+ 
     // ================= Expert Details =================
 
     category: {
@@ -73,6 +84,8 @@ const userSchema = new mongoose.Schema(
   {
     timestamps: true,
   }
+
+  
 );
 
 module.exports = mongoose.model("User", userSchema);

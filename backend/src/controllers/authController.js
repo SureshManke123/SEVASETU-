@@ -192,7 +192,7 @@ exports.updateProfile = async (req, res) => {
       });
     }
 
-    // Update fields
+    // Update fields //
     user.name = name || user.name;
     user.phone = phone || user.phone;
     user.address = address || user.address;
@@ -275,7 +275,10 @@ exports.registerExpert = async (req, res) => {
 
     const user = await User.create({
       name, email, password: await bcrypt.hash(password, 10), phone, address, category,
-      experience: Number(experience), price: Number(price), role: "expert",
+      experience: Number(experience), price: Number(price), 
+  role: 'user',
+  expertRequest: true,
+  isApproved: false,
     });
 
     res.status(201).json({
@@ -288,3 +291,40 @@ exports.registerExpert = async (req, res) => {
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
+
+
+exports.applyForExpert = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    if (user.role === 'expert' && user.isApproved) {
+      return res.status(400).json({
+        success: false,
+        message: 'Already an approved expert',
+      });
+    }
+
+    user.expertRequest = true;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Expert request submitted successfully',
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: 'Server Error',
+    });
+  }
+};
+
