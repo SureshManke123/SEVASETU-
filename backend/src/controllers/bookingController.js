@@ -219,7 +219,7 @@ exports.rejectBooking = async (req, res) => {
       });
     }
 
-    booking.status = "cancelled";
+    booking.status = "rejected";
     await booking.save();
 
     res.status(200).json({
